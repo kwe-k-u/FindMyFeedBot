@@ -4,6 +4,7 @@ import tweepy
 class Query:
     query_type :str #the type of the query 'search'
     query :str #keywords that are to be searched
+    id :str #identifier for the query. matches the dm ID
     sending_user :str #the user sending the query
 
 
@@ -12,6 +13,7 @@ class Query:
 
         # parses the dm request by breaking it into its components
         def parseDM(message):
+            #TODO check to that the message is sent from a different account
             query: str
             query = message.message_create['message_data']['text']  # get the text in the message
             # index key
@@ -25,6 +27,7 @@ class Query:
 
         params = parseDM(dm)
         self.query = params[1]
+        self.id = dm.id
         self.query_type = params[0].replace("#","")
         self.sending_user = dm.message_create['sender_id']
 
