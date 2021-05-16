@@ -6,6 +6,7 @@ class Query:
     query :str #keywords that are to be searched
     id :str #identifier for the query. matches the dm ID
     sending_user :str #the user sending the query
+    #TODO tag for who may have tweeted the tweet
 
 
     #constructor

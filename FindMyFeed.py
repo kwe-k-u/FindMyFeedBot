@@ -1,72 +1,47 @@
 import tweepy
 from Query import Query
-import os
-from dotenv import load_dotenv
-
-#constants
-load_dotenv() #getting the keys from the .env file
-CONSUMER_KEY = os.environ.get("CONSUMER_KEY")
-CONSUMER_SECRET = os.environ.get("CONSUMER_SECRET")
-ACCESS_KEY = os.environ.get("ACCESS_KEY")
-ACCESS_SECRET = os.environ.get("ACCESS_SECRET")
 
 
 
-#searches the user's feed looking for messages that have the passed keywords
-def search(query :Query):
-    print("searching...")
-    # searching a user's feed
-    status: tweepy.models.Status
-    for status in tweepy.Cursor(api.user_timeline, id= query.sending_user, tweet_mode="extended").items():
-        if query.query in status.full_text:  # remove the split in production
-            replyWithTweet(status)
-    print('search complete')
+class FindMyFeedBot:
+    #attributes
+    api : tweepy.API #twitter api object
+    query : Query #object for the search requests sent via the bots DM
+    results : tweepy.cursor.Cursor #all the tweets on  timeline that match the search query
 
 
+    #constructor
+    def __init__(self, ap : tweepy.API):
+        self.api = ap
 
-#replies the sender of the tweet with a response for their search
-def replyWithTweet(response: tweepy.models.Status):
-    print("replying tweet")
-    message = "2 Found a tweet matching your query\nSent by @" + response.author.screen_name + "\nTweet content" + response.full_text
-    api.send_direct_message( recipient_id= params.sending_user, text= message)
-    print('reply successful')
-#TODO create log for all results using AA000 as a marker
+    #seraches the user's feed for tweets that have the same keywork as the DM's query
+    def search(self):
+        print("searching..")
 
-def deleteRequest():
-    print('delete request ' + params.id)
-    api.destroy_direct_message(params.id)
-    print('success')
+        status: tweepy.models.Status
+        for status in tweepy.Cursor(self.api.user_timeline, id= self.query.sending_user, tweet_mode="extended").items():
+            if self.query.query in status.full_text:
+                self.replyWithTweet(status)
 
+        print("search complete") #TODO send to user's dm?
 
+    #replies the sender of a DM with the response for their search
+    def replyWithTweet(self, response : tweepy.models.Status):
+        print("replying tweet")
+        message = "2 Found a tweet matching your query\nSent by @" + response.author.screen_name + "\nTweet content" + response.full_text
+        self.api.send_direct_message(recipient_id= self.query.sending_user, text=message)
+        print('reply successful')
 
+    def deleteRequest(self):
+        print("deleting request " + self.query.id)
+        self.api.destroy_direct_message(self.query.id)
+        print('delete successful')
 
-
-
-#connecting to twitter api
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
-api = tweepy.API(auth)
-
-#finding direct messages that contain search parameters
-dm = api.list_direct_messages()
-
-#parsing text
-#TODO loop through all dms
-params : Query
-params = Query(dm[0])
-#searching a user's feed
-search(params)
-#
-# status : tweepy.models.Status
-# for status in tweepy.Cursor(api.user_timeline, id=params.sending_user, tweet_mode="extended").items():
-#     if params.query in status.full_text: # remove the split in production
-#         replyWithTweet(status)
-
-
-#delete dm to prevent duplication of search
-# deleteRequest()
-
-#TODO the user should be able to refer to the found tweet and then have the bot refer the user to that tweet
-#twitter api doesn't let user's send tweets in direct messages
-
+    def execute (self, dm : tweepy.DirectMessage):
+        #parse query
+        self.query = Query(dm)
+        self.search()
+        #log
+        # self.deleteRequest() TODO activate
+        print()
 
