@@ -14,7 +14,8 @@ class FindMyFeedBot:
     def __init__(self, ap : tweepy.API):
         self.api = ap
 
-    #seraches the user's feed for tweets that have the same keywork as the DM's query
+    #runs for only 50 seconds
+    #searches the user's feed for tweets that have the same keyword as the DM's query
     def search(self):
         print("searching..")
 
@@ -28,7 +29,7 @@ class FindMyFeedBot:
     #replies the sender of a DM with the response for their search
     def replyWithTweet(self, response : tweepy.models.Status):
         print("replying tweet")
-        message = "2 Found a tweet matching your query\nSent by @" + response.author.screen_name + "\nTweet content" + response.full_text
+        message = "2 Found a tweet matching your query\n\nSent by @" + response.author.screen_name + "\n\nTweet content\n" + response.full_text
         self.api.send_direct_message(recipient_id= self.query.sending_user, text=message)
         print('reply successful')
 
@@ -37,11 +38,14 @@ class FindMyFeedBot:
         self.api.destroy_direct_message(self.query.id)
         print('delete successful')
 
+    #executes the search of a query
     def execute (self, dm : tweepy.DirectMessage):
         #parse query
         self.query = Query(dm)
         self.search()
         #log
         # self.deleteRequest() TODO activate
-        print()
+
+
+
 
