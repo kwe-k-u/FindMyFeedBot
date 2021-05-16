@@ -14,7 +14,7 @@ class Query:
 
         # parses the dm request by breaking it into its components
         def parseDM(message):
-            #TODO check to that the message is sent from a different account
+            #TODO check to see if that the message is sent from a different account
             query: str
             query = message.message_create['message_data']['text']  # get the text in the message
             # index key

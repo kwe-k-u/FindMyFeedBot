@@ -10,7 +10,10 @@ import time
 #TODO the user should be able to refer to the found tweet and then have the bot refer the user to that tweet
 #twitter api doesn't let user's send tweets in direct messages
 #TODO multithreading; seraching, replying, logs, timer to keep bot within 50 seconds of operation
-
+#TODO allow for querying of text from images
+#TODO allow for querying of text from videos
+#TODO filter searches to ones with and ones without images
+#TODO find a way to include links to tweets/ tag user under the tweet and delete after a couple minutes
 
 
 def main():
