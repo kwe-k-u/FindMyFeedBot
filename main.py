@@ -9,7 +9,7 @@ import time
 #TODO create log for all results using AA000 as a marker
 #TODO the user should be able to refer to the found tweet and then have the bot refer the user to that tweet
 #twitter api doesn't let user's send tweets in direct messages
-#TODO multithreading; seraching, replying, logs, timer to keep bot within 50 seconds of operation
+#TODO multithreading; searching, replying, logs, timer to keep bot within 50 seconds of operation
 #TODO allow for querying of text from images
 #TODO allow for querying of text from videos
 #TODO filter searches to ones with and ones without images

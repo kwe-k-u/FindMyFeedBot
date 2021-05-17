@@ -1,23 +1,52 @@
-import os
-from dotenv import load_dotenv
-
 
 class Logger:
     last_id : str
+    file = [None,None] #reading to 0, writing to 1
+    file_content = None
 
 
 
     #initialise logger and access save file path
     def __init__(self):
         self.last_id = 'AAA00'
+        self.read()
 
+    #deconstructor: close the log file
+    def __del__(self):
+        try:
+            if self.file[0]:
+                print("reader destruct")
+                self.file[0].close()
+        except Exception:
+            pass
+        finally:
+            if self.file[1]:
+                print("writer destruct")
+                self.file[1].close();
 
 
     def read(self):
-        print()
+        try:
+            self.file[0] = open("log.txt","r")
+            self.file_content = self.file[0].readlines()
+            self.file[0].close()
+        except FileNotFoundError:
+            self.write()
+            self.read()
 
-    def write(self):
-        print()
+    def write(self, content = None, index = True):
+        if self.file[1] is None or self.file[1].closed:
+            self.file[1] = open('log.txt', 'w')
+        if content is None:
+            self.write(self.last_id)
+            self.file[1].close()
+        else:
+            if index:
+                self.file[1].write(content + "\n"+ "\n".join(self.file_content)) #update the query results
+            else:
+                self.file[1].write(content + "\n".join(self.file_content[1:])) #update last request counter
+
+
 
     def next_id(self):
 
