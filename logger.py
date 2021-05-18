@@ -3,6 +3,7 @@ class Logger:
     last_id : str
     file = [None,None] #reading to 0, writing to 1
     file_content = None
+    history = [] #list of the requests processed during the session
 
 
 
@@ -13,6 +14,7 @@ class Logger:
 
     #deconstructor: close the log file
     def __del__(self):
+
         try:
             if self.file[0]:
                 print("reader destruct")
@@ -21,8 +23,13 @@ class Logger:
             pass
         finally:
             if self.file[1]:
+                self.write(self.last_id+"\ne\ne", index=False)
+                for con in self.history:
+                    self.file[1].write(con)
+                self.write ("\n".join(self.file_content))
                 print("writer destruct")
                 self.file[1].close();
+        super()
 
 
     def read(self):
@@ -31,22 +38,28 @@ class Logger:
             self.file_content = self.file[0].readlines()
             self.file[0].close()
         except FileNotFoundError:
-            self.write()
+            self.write(content= self.last_id, index=True)
             self.read()
 
     def write(self, content = None, index = True):
         if self.file[1] is None or self.file[1].closed:
             self.file[1] = open('log.txt', 'w')
         if content is None:
-            self.write(self.last_id)
+            self.write("")
             self.file[1].close()
         else:
             if index:
-                self.file[1].write(content + "\n"+ "\n".join(self.file_content)) #update the query results
+                # write the tweet result into log
+                self.file[1].write(content)
+                # self.file[1].write( "\n" + self.last_id + "-" + content + "\n"+ "\n".join(self.file_content) )
             else:
-                self.file[1].write(content + "\n".join(self.file_content[1:])) #update last request counter
+                # update last request counter
+                self.file[1].write("\n"+"last_id-"+ content + "\n".join(self.file_content[1:]))
 
 
+    def addToLog(self, tweet_id):
+        self.history.append(self.last_id + "-" + str(tweet_id))
+        self.next_id()
 
     def next_id(self):
 

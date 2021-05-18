@@ -1,5 +1,4 @@
 import tweepy
-from Query import Query
 from os import environ
 from FindMyFeed import FindMyFeedBot
 from dotenv import load_dotenv
@@ -23,6 +22,7 @@ def main():
     CONSUMER_SECRET = environ.get('CONSUMER_SECRET')
     ACCESS_KEY = environ.get('ACCESS_KEY')
     ACCESS_SECRET = environ.get('ACCESS_SECRET')
+    BOT_ID = environ.get('BOT_ID')
 
 
     while True:
@@ -36,7 +36,7 @@ def main():
 
         #instantiating bot
         bot : FindMyFeedBot
-        bot = FindMyFeedBot(api)
+        bot = FindMyFeedBot(ap= api,bot_id= str(BOT_ID))
 
         #finding direct messages that contain search parameters
         dm_list = api.list_direct_messages()
