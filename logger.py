@@ -1,9 +1,10 @@
+def increaseChar(c):
+    return chr( ord(c)+1 )
+
 
 class Logger:
-    last_id : str
+    last_id : str #the last id(marker for query results) used
     file = [None,None] #reading to 0, writing to 1
-    file_content = None
-    history = [] #list of the requests processed during the session
 
 
 
@@ -12,60 +13,67 @@ class Logger:
         self.last_id = 'AAA00'
         self.read()
 
-    #deconstructor: close the log file
-    def __del__(self):
 
-        try:
-            if self.file[0]:
-                print("reader destruct")
-                self.file[0].close()
-        except Exception:
-            pass
-        finally:
-            if self.file[1]:
-                self.write(self.last_id+"\ne\ne", index=False)
-                for con in self.history:
-                    self.file[1].write(con)
-                self.write ("\n".join(self.file_content))
-                print("writer destruct")
-                self.file[1].close();
-        super()
 
 
     def read(self):
+        # read the content of the log file and update logger last_id
+
         try:
             self.file[0] = open("log.txt","r")
-            self.file_content = self.file[0].readlines()
+            self.last_id = self.file[0].readlines()[-1].split("-")[0].replace("\n","")
             self.file[0].close()
         except FileNotFoundError:
-            self.write(content= self.last_id, index=True)
+            self.writeLastId(" ")
             self.read()
 
-    def write(self, content = None, index = True):
+
+
+
+       #log the assigned index to the last query result(tweet id)
+    def writeIndex(self, content):
+        #ensure writer is open
         if self.file[1] is None or self.file[1].closed:
-            self.file[1] = open('log.txt', 'w')
-        if content is None:
-            self.write("")
-            self.file[1].close()
-        else:
-            if index:
-                # write the tweet result into log
-                self.file[1].write(content)
-                # self.file[1].write( "\n" + self.last_id + "-" + content + "\n"+ "\n".join(self.file_content) )
-            else:
-                # update last request counter
-                self.file[1].write("\n"+"last_id-"+ content + "\n".join(self.file_content[1:]))
+            self.file[1] = open('log.txt', 'a')
+
+        #if content is given, write it as an index
+        if content is not None:
+            self.file[1].write("\n" + self.last_id + "-" + content)
+            self.next_id()
+
+        self.file[1].close()
 
 
-    def addToLog(self, tweet_id):
-        self.history.append(self.last_id + "-" + str(tweet_id))
-        self.next_id()
+    #log the id for last query(DM)
+    def writeLastId(self, tweet_id):
 
+        # #if content is given, write it as an index
+        if tweet_id is not None:
+            #retrieving current content of file (removing last tweet id)
+            temp = open("log.txt", 'r')
+            temp.readline()
+            prev = "\n" + "".join(temp.readlines())
+            print(prev)
+
+            temp.close()
+
+            # #ensure writer is open
+            if self.file[1] is None or self.file[1].closed:
+                self.file[1] = open('log.txt', 'w')
+
+            #if the file contains a history of logs
+            self.file[1].write(tweet_id)
+            self.file[1].write( prev)
+
+            self.next_id()
+
+        self.file[1].close()
+
+
+    #increases the passed character by 1
+    #generate the next search result index
     def next_id(self):
 
-        #increases the passed character by 1
-        def increaseChar(c):
-            return chr( ord(c)+1 )
 
 
         #if any of the index place values has reached an end, perform necessary adjustments
@@ -95,7 +103,7 @@ class Logger:
 
         # if no place value is at end, increase smallest place value by 1
         else:
-            self.last_id = self.last_id[:-1] + increaseChar(self.last_id[-1])
+            self.last_id = self.last_id[0:4] + increaseChar(self.last_id[4])
 
 
 

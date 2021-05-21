@@ -13,7 +13,14 @@ import time
 #TODO allow for querying of text from videos
 #TODO filter searches to ones with and ones without images
 #TODO find a way to include links to tweets/ tag user under the tweet and delete after a couple minutes
-
+'''
+    bot capabilities
+    - #search -> find tweets containing a keyword
+    - #feedback -> receive and store feedback people have for the bot
+    - #serchimage ->Find images that contain a passed keyword
+                    -> future improvements(implementing Google's mum) should allow image search based on action
+    - 
+'''
 
 def main():
     # loading environment variables
@@ -32,6 +39,7 @@ def main():
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
         api = tweepy.API(auth)
+        api.rate_limit_status
 
 
         #instantiating bot
@@ -47,7 +55,4 @@ def main():
         print("program end")
         time.sleep(2)
 
-try:
-    main()
-except:
-    main()
+main()

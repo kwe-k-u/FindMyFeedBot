@@ -1,7 +1,7 @@
 import tweepy
 from Query import Query
 from logger import  Logger
-
+from time import time
 
 
 class FindMyFeedBot:
@@ -18,12 +18,17 @@ class FindMyFeedBot:
         self.logger = Logger()
         self.bot_id = bot_id
 
-    #runs for only 50 seconds
+    #runs for only 20 seconds
     #searches the user's feed for tweets that have the same keyword as the DM's query
     def search(self):
+        start_time = time()
         print("searching..")#TODO send to user's dm?
         status: tweepy.models.Status
         for status in tweepy.Cursor(self.api.user_timeline, id= self.query.sending_user, tweet_mode="extended").items():
+
+            #breaking search if it's run for longer than 20 seconds
+            if time() - start_time > 20:
+                break
 
             if self.query.query in status.full_text:
 
@@ -39,6 +44,7 @@ class FindMyFeedBot:
         message = self.logger.last_id + "\nFound a tweet matching your query\n\nSent by @" + response.author.screen_name + "\n\nTweet content\n" + response.full_text
         self.api.send_direct_message(recipient_id= self.query.sending_user, text=message)
         print('reply successful')
+        self.logger.next_id()
 
     def deleteRequest(self):
         print("deleting request " + self.query.id)
