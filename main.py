@@ -30,7 +30,7 @@ def main():
     ACCESS_KEY = environ.get('ACCESS_KEY')
     ACCESS_SECRET = environ.get('ACCESS_SECRET')
     BOT_ID = environ.get('BOT_ID')
-
+    seconds = 20#time that the bot will sleep
 
     while True:
         # time_check = time.time();
@@ -60,6 +60,13 @@ def main():
             #        pass
             bot.execute(dm)
         print("program end")
-        time.sleep(2)
+
+        #if no new dm was sent, sleep for twice as long
+        if len(dm_list) == 0:
+            seconds += seconds
+            time.sleep(seconds)
+        else:#if dm was recently sent, sleep for 20 seconds
+            seconds = 20
+            time.sleep(seconds)
 
 main()

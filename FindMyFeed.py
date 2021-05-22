@@ -59,6 +59,8 @@ class FindMyFeedBot:
         if self.query.sending_user != self.bot_id: #run if the dm isn't from the bot
             # self.logger.write(content= self.query.id, index= False)
             self.search()
+        else:
+            self.logger.writeLastId(self.query.id)#log the id of the message the bot sent to reduce repetition
         #log
         # self.deleteRequest() TODO activate:: is it still relevant? logger solves duplication issue
 
