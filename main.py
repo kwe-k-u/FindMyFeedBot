@@ -39,15 +39,22 @@ def main():
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
         api = tweepy.API(auth)
-        api.rate_limit_status
+        # api.rate_limit_status
 
 
         #instantiating bot
         bot : FindMyFeedBot
         bot = FindMyFeedBot(ap= api,bot_id= str(BOT_ID))
 
-        #finding direct messages that contain search parameters
         dm_list = api.list_direct_messages()
+
+        #removing the messages after the last completed query
+        for d in dm_list: #iterate through dms
+            if d.id == bot.logger.last_dm_id:#if the current dm has the same id as our last
+                index = dm_list.index(d)
+                dm_list = dm_list[:index]
+
+        #finding direct messages that contain search parameters
         for dm in dm_list:
             # if time.time() - time_check  > 50:
             #        pass

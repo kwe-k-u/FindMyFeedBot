@@ -4,6 +4,7 @@ def increaseChar(c):
 
 class Logger:
     last_id : str #the last id(marker for query results) used
+    last_dm_id : str
     file = [None,None] #reading to 0, writing to 1
 
 
@@ -21,7 +22,15 @@ class Logger:
 
         try:
             self.file[0] = open("log.txt","r")
-            self.last_id = self.file[0].readlines()[-1].split("-")[0].replace("\n","")
+
+            #ensuring the file isn't empty
+            temp_lines = self.file[0].readlines()
+            if len(temp_lines) > 0:
+
+                temp_id = temp_lines[-1].split("-")[0].replace("\n", "")
+                self.last_id = temp_id
+                self.last_dm_id = temp_lines[0].replace("\n", "")
+
             self.file[0].close()
         except FileNotFoundError:
             self.writeLastId(" ")
@@ -50,12 +59,14 @@ class Logger:
         # #if content is given, write it as an index
         if tweet_id is not None:
             #retrieving current content of file (removing last tweet id)
-            temp = open("log.txt", 'r')
-            temp.readline()
-            prev = "\n" + "".join(temp.readlines())
-            print(prev)
+            try:
+                temp = open("log.txt", 'r')
+                temp.readline()
+                prev = "\n" + "".join(temp.readlines())
 
-            temp.close()
+                temp.close()
+            except:
+                prev = ""
 
             # #ensure writer is open
             if self.file[1] is None or self.file[1].closed:

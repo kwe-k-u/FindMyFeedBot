@@ -29,12 +29,11 @@ class FindMyFeedBot:
             #breaking search if it's run for longer than 20 seconds
             if time() - start_time > 20:
                 break
-
+            #found tweet matching query
             if self.query.query in status.full_text:
-
-                # self.logger.write(content= status.id_str)
-                self.logger.addToLog(status.id_str)
-                self.replyWithTweet(status)
+                self.logger.writeLastId(self.query.id) #log the tweet id
+                self.logger.writeIndex(status.id_str)
+                self.replyWithTweet(status) #reply user with the tweet
 
         print("search complete") #TODO send to user's dm?
 
@@ -56,6 +55,7 @@ class FindMyFeedBot:
 
         #parse query
         self.query = Query(dm)
+        print("sending user:" + self.query.sending_user + " "+ str(self.query.sending_user != self.bot_id))
         if self.query.sending_user != self.bot_id: #run if the dm isn't from the bot
             # self.logger.write(content= self.query.id, index= False)
             self.search()
